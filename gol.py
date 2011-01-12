@@ -115,7 +115,7 @@ def lifecount(gmap, x, y):
 
 	return count
 
-def loop(gmap):
+def loop(gmap, timesteps):
 	cls()
 	printmap(gmap)
 	print "Initial population."
@@ -151,17 +151,31 @@ def loop(gmap):
 					if lc == 3:
 						tmp[i][j]=True
 						born+=1
-		printmap(gmap)
+		printmap(tmp)
 		population = born+alive
 		print "Step: "+str(step)+". Born: "+str(born)+". Dead: "+str(dead)+". Alive: "+str(alive)+". Population: "+str(population)
-		if population == 0: break
-		if gmap == tmp: break
-		if gmap == prevprevstep: break
+		trueexist=False
+		for a in tmp:
+			if True in a:
+				trueexist=True
+		if not trueexist:
+			print "Exit on apocalypse."
+			break
+		if gmap == tmp:
+			print "Exit on stopped evolution."
+			break
+		if gmap == prevprevstep:
+			print "Exit on 2-step cycles."
+			break
 		gmap = tmp
-		try:
-			time.sleep(0.1)
-#			raw_input("")
-		except: return
+
+		if timesteps:
+			try: time.sleep(0.1)
+			except: return
+		else:
+			try:
+				raw_input("")
+			except: return
 
 def usage():
 	print """USAGE:
@@ -179,12 +193,19 @@ def usage():
 
 if __name__ == "__main__":
 	print "Game Of Life. a1fred."
+	timesteps=True
+	try:
+		a = sys.argv.index("-n")
+		timesteps=False
+		del sys.argv[a]
+	except:
+		pass
 	if len(sys.argv) == 1 or sys.argv[1] == "cmd":
 		print "Starting game from input."
 		gmap = readmap()
 		if gmap:
 			print "Loaded map:"
-			loop(gmap)
+			loop(gmap,timesteps)
 		sys.exit(0)
 	if sys.argv[1] == "--help":
 		usage()
@@ -195,7 +216,7 @@ if __name__ == "__main__":
 		except: gmap = filemap()
 		if gmap:
 			print "Loaded map:"
-			loop(gmap)
+			loop(gmap,timesteps)
 		sys.exit(0)
 	if sys.argv[1] in ("generate", "gen", "g"):
 		print "Generating map..."
