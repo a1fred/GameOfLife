@@ -69,21 +69,21 @@ def readmap():
 	return golmap
 
 def printmap(golmap):
-	print "_ _",
-	for x in  range(len(golmap[0])): print '_',
+	print "__",
+	for x in  range(len(golmap[0])): print '\b_',
 	print
 	for row in golmap:
 		print "|",
 		for life in row:
 			if os.name == 'posix':
-				if life: print '\033[0;32m'+"#"+'\033[0m',
-				else: print '\033[0;30m'+"o"+'\033[0m',
+				if life: print '\b\033[0;32m'+"#"+'\033[0m',
+				else: print '\b\033[0;30m'+"o"+'\033[0m',
 			else:
-				if life: print "#",
-				else: print "o",
+				if life: print "\b#",
+				else: print "\bo",
 		print "|"
-	print "- -",
-	for x in  range(len(golmap[0])): print '-',
+	print "--",
+	for x in  range(len(golmap[0])): print '\b-',
 	print
 
 def savemap(gmap,foutpath=DEFAULT_MAP):
