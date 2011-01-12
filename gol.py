@@ -125,7 +125,11 @@ def loop(gmap):
 	leny=len(gmap)
 	lenx=len(gmap[0])
 	step=0
+	prevstep=1
+	prevprevstep=2
 	while True:
+		prevprevstep=prevstep
+		prevstep=gmap
 		step+=1
 		cls()
 		tmp = list( list( False for x in range(lenx) ) for y in range(leny) )
@@ -152,9 +156,10 @@ def loop(gmap):
 		print "Step: "+str(step)+". Born: "+str(born)+". Dead: "+str(dead)+". Alive: "+str(alive)+". Population: "+str(population)
 		if population == 0: break
 		if gmap == tmp: break
+		if gmap == prevprevstep: break
 		gmap = tmp
 		try:
-			time.sleep(0.2)
+			time.sleep(0.1)
 #			raw_input("")
 		except: return
 
