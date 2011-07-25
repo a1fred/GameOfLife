@@ -16,7 +16,9 @@ def filemap(filename=DEFAULT_MAP):
 	except:
 		print "Cant open filename."
 		return None
-	world=f.read()[:-1]
+	world=f.read()
+	# del last newline, which not have file
+	if world[ len(world)-1 ] == '\n': world = world[:-1]
 	f.close()
 
 	# Get row and col count
@@ -115,12 +117,13 @@ def lifecount(gmap, x, y):
 
 	return count
 
-def loop(gmap, timesteps):
+def loop(gmap, timesteps, interactive=False):
 	cls()
 	printmap(gmap)
 	print "Initial population."
-	try: raw_input("")
-	except: return
+	if interactive:
+		try: raw_input("")
+		except: return
 	cls()
 	leny=len(gmap)
 	lenx=len(gmap[0])
@@ -164,18 +167,19 @@ def loop(gmap, timesteps):
 		if gmap == tmp:
 			print "Exit on stopped evolution."
 			break
-		if gmap == prevprevstep:
+		if tmp == prevprevstep:
 			print "Exit on 2-step cycles."
 			break
 		gmap = tmp
 
 		if timesteps:
 			try: time.sleep(0.1)
-			except: return
+			except: return step
 		else:
 			try:
 				raw_input("")
-			except: return
+			except: return step
+	return step
 
 def usage():
 	print """USAGE:
@@ -205,7 +209,8 @@ if __name__ == "__main__":
 		gmap = readmap()
 		if gmap:
 			print "Loaded map:"
-			loop(gmap,timesteps)
+			ret = loop(gmap,timesteps)
+			sys.exit(ret)
 		sys.exit(0)
 	if sys.argv[1] == "--help":
 		usage()
@@ -216,7 +221,8 @@ if __name__ == "__main__":
 		except: gmap = filemap()
 		if gmap:
 			print "Loaded map:"
-			loop(gmap,timesteps)
+			ret = loop(gmap,timesteps)
+			sys.exit(ret)
 		sys.exit(0)
 	if sys.argv[1] in ("generate", "gen", "g"):
 		print "Generating map..."
@@ -231,4 +237,5 @@ if __name__ == "__main__":
 				savemap(gmap)
 				print "Map saved to "+DEFAULT_MAP+"."
 		sys.exit(0)
+	usage()
 
